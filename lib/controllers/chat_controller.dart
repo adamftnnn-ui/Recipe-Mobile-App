@@ -4,14 +4,13 @@ import '../repositories/chat_repository.dart';
 
 class ChatController {
   final ChatRepository repository = ChatRepository();
-  final ValueNotifier<List<ChatMessage>> chatsNotifier = ValueNotifier([]);
+  final ValueNotifier<List<ChatMessage>> chatsNotifier =
+      ValueNotifier<List<ChatMessage>>([]);
 
   final String userAvatar = 'assets/images/avatar.jpg';
   final String assistantAvatar = 'assets/images/avatar_ai.jpg';
   final String userName = 'Adam';
   final String assistantName = 'Kama';
-
-  String _contextId = '342938'; // Context ID default dari Spoonacular
 
   void addInitialGreeting(BuildContext context) {
     chatsNotifier.value = [
@@ -50,6 +49,7 @@ class ChatController {
     chatsNotifier.value = [...chatsNotifier.value, message];
   }
 
+  /// Dipanggil dari UI setiap kali user menekan tombol kirim.
   Future<void> getAssistantReply(
     String userMessage,
     BuildContext context,
@@ -58,13 +58,20 @@ class ChatController {
       final keyword = userMessage.toLowerCase();
       final recipeKeywords = [
         'resep',
+        'recipe',
+        'masak',
+        'cook',
         'burger',
         'ayam',
         'nasi',
         'sop',
+        'soup',
         'ikan',
+        'fish',
         'cake',
         'kue',
+        'pasta',
+        'salad',
       ];
       final isRecipeQuery = recipeKeywords.any((k) => keyword.contains(k));
 
@@ -80,31 +87,63 @@ class ChatController {
 
   Future<void> _fetchRecipe(String userMessage, BuildContext context) async {
     try {
-      final result = await repository.getRecipe(userMessage);
-      if (result != null &&
-          result.containsKey('results') &&
-          (result['results'] as List).isNotEmpty) {
-        final item = result['results'][0];
-        final title = item['title'] ?? 'Resep Tanpa Judul';
-        final ready = item['readyInMinutes'] ?? '-';
-        final servings = item['servings'] ?? '-';
-        final ingredients = (item['extendedIngredients'] as List? ?? [])
-            .map((e) => e['original']?.toString() ?? '')
-            .where((s) => s.isNotEmpty)
-            .toList();
+      final detail = await repository.getRecipeDetailFromQuery(userMessage);
 
-        String reply =
-            '**$title**\nPorsi: $servings\nWaktu masak: $ready menit\nBahan:\n';
-        for (var ing in ingredients) {
-          reply += '- $ing\n';
-        }
-        addAssistantMessage(reply.trim(), context);
-      } else {
+      if (detail == null) {
         addAssistantMessage(
           'Maaf, saya tidak menemukan resep untuk "$userMessage".',
           context,
         );
+        return;
       }
+
+      final String title = (detail['title'] ?? 'Resep Tanpa Judul').toString();
+      final dynamic readyRaw = detail['readyInMinutes'];
+      final String ready = (readyRaw == null || readyRaw.toString().isEmpty)
+          ? '-'
+          : readyRaw.toString();
+
+      final dynamic servingsRaw = detail['servings'];
+      final String servings =
+          (servingsRaw == null || servingsRaw.toString().isEmpty)
+          ? '-'
+          : servingsRaw.toString();
+
+      final List extIng = detail['extendedIngredients'] as List? ?? <dynamic>[];
+      final List<String> ingredients = extIng
+          .map<String>((e) {
+            if (e is Map<String, dynamic>) {
+              return (e['original'] ?? e['name'] ?? '').toString().trim();
+            }
+            return e.toString().trim();
+          })
+          .where((s) => s.isNotEmpty)
+          .toList();
+
+      // Ambil instructions kalau ada, kalau tidak pakai summary
+      String instructions = (detail['instructions'] ?? detail['summary'] ?? '')
+          .toString()
+          .trim();
+
+      if (instructions.isNotEmpty) {
+        instructions = _stripHtml(instructions);
+      }
+
+      String reply =
+          '**$title**\nPorsi: $servings\nWaktu masak: $ready menit\n';
+
+      if (ingredients.isNotEmpty) {
+        reply += '\nBahan:\n';
+        for (final ing in ingredients) {
+          reply += '- $ing\n';
+        }
+      }
+
+      if (instructions.isNotEmpty) {
+        reply += '\nLangkah:\n$instructions';
+      }
+
+      addAssistantMessage(reply.trim(), context);
     } catch (e) {
       addAssistantMessage(
         'Maaf, terjadi kesalahan saat mengambil resep.',
@@ -118,15 +157,15 @@ class ChatController {
     BuildContext context,
   ) async {
     try {
-      final replyText = await repository.getConverseReply(
-        userMessage,
-        _contextId,
-      );
+      final replyText = await repository.getConverseReply(userMessage);
       addAssistantMessage(replyText, context);
-      // Update contextId jika API mengembalikan yang baru (opsional)
-      // _contextId = response?['contextId'] ?? _contextId;
     } catch (e) {
       addAssistantMessage('Maaf, terjadi kesalahan pada AI.', context);
     }
+  }
+
+  /// Utility sederhana untuk menghapus tag HTML dari teks (summary/instructions).
+  String _stripHtml(String html) {
+    return html.replaceAll(RegExp(r'<[^>]*>'), '').trim();
   }
 }

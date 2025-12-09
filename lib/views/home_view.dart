@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '/views/recipe_list_view.dart';
 import '../models/user_model.dart';
 import '../models/recipe_model.dart';
 import '../models/event_model.dart';
@@ -127,6 +128,24 @@ class _HomeViewState extends State<HomeView> {
       CreateRecipeView(
         controller: createController,
         profileController: profileController,
+        onRecipePosted: () {
+          setState(() {
+            _selectedIndex = 3;
+          });
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => RecipeListView(
+                initialKeyword: '',
+                title: 'Daftar Resepku',
+                recipes: profileController.userRecipes.value,
+                showDelete: true,
+                profileController: profileController,
+              ),
+            ),
+          );
+        },
       ),
       const ChatView(),
       ProfileView(controller: profileController),

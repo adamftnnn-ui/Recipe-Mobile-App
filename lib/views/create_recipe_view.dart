@@ -10,6 +10,7 @@ import '../widgets/info_box.dart';
 class CreateRecipeView extends StatefulWidget {
   final CreateRecipeController controller;
   final ProfileController profileController;
+  final VoidCallback? onRecipePosted;
   final bool isEditMode;
   final int? editIndex;
 
@@ -17,6 +18,7 @@ class CreateRecipeView extends StatefulWidget {
     super.key,
     required this.controller,
     required this.profileController,
+    this.onRecipePosted,
     this.isEditMode = false,
     this.editIndex,
   });
@@ -116,7 +118,12 @@ class _CreateRecipeViewState extends State<CreateRecipeView> {
       _nutritions.clear();
       _selectedImage = null;
     });
+
+    // ⬇️ Biarkan parent (HomeView) yang atur navigasi berikutnya
+    widget.onRecipePosted?.call();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -124,20 +131,43 @@ class _CreateRecipeViewState extends State<CreateRecipeView> {
       backgroundColor: Colors.grey[50],
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: Text(
-                  widget.isEditMode ? 'Edit Resep' : 'Buat Resep',
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 18,
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 16),
+                  Text(
+                    widget.isEditMode ? 'Edit Resep' : 'Buat Resep',
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               InfoBox(
@@ -196,7 +226,7 @@ class _CreateRecipeViewState extends State<CreateRecipeView> {
                   widget.controller.setNutritions(_nutritions);
                 },
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
               Center(
                 child: ElevatedButton(
                   onPressed: _postRecipe,
