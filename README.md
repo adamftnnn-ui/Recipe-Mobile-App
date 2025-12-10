@@ -4,7 +4,7 @@
 
 Aplikasi ini memudahkan pengguna untuk:
 - Menemukan resep dari berbagai negara.
-- Melihat detail lengkap: bahan, langkah, nutrisi, dan waktu memasak.
+- Melihat detail lengkap: bahan, langkah, nutrisi, badge halal, porsi, dan waktu memasak.
 - Membuat resep sendiri (create, edit, delete).
 - Menggunakan fitur percakapan AI untuk rekomendasi resep.
 - Mengecek status **Halal** otomatis pada setiap bahan.
@@ -29,8 +29,8 @@ Aplikasi ini memudahkan pengguna untuk:
 
 ### 🤖 Chat AI
 - Tanya AI seperti:
-  - "Resep ayam yang enak apa?"
-  - "Bahan yang diperlukan apa saja?"
+  - "Resep Ayam Pedas"
+  - "Resep Burger"
 - Mendapatkan hasil yang langsung diambil dari API.
 
 ### 🧼 Pengecekan Halal Otomatis
