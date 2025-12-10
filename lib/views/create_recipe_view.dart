@@ -6,6 +6,8 @@ import '../controllers/profile_controller.dart';
 import '../widgets/multi_line_section.dart';
 import '../widgets/nutrition_editable.dart';
 import '../widgets/info_box.dart';
+import '../controllers/detail_recipe_controller.dart';
+import 'detail_recipe_view.dart';
 
 class CreateRecipeView extends StatefulWidget {
   final CreateRecipeController controller;
@@ -84,15 +86,22 @@ class _CreateRecipeViewState extends State<CreateRecipeView> {
       'isHalal': widget.controller.isHalal,
       'readyInMinutes': widget.controller.time,
       'servings': widget.controller.serving,
-      'ingredients': widget.controller.ingredients,
-      'steps': widget.controller.steps,
-      'nutritions': widget.controller.nutritions,
+
+      // PENTING: copy list, jangan referensi langsung
+      'ingredients': List<String>.from(widget.controller.ingredients),
+      'steps': List<String>.from(widget.controller.steps),
+      'nutritions': List<Map<String, String>>.from(
+        widget.controller.nutritions,
+      ),
+
       'image': _selectedImage ?? '',
     };
 
     if (widget.isEditMode && widget.editIndex != null) {
+      // 🔹 UPDATE resep lama di ProfileController
       widget.profileController.updateRecipeAt(widget.editIndex!, recipe);
     } else {
+      // 🔹 CREATE resep baru
       widget.profileController.addRecipe(recipe);
     }
 
@@ -106,6 +115,7 @@ class _CreateRecipeViewState extends State<CreateRecipeView> {
       ),
     );
 
+    // Reset controller & state lokal (optional, biar bersih)
     widget.controller.clearAll();
     setState(() {
       _titleC.clear();
@@ -119,10 +129,25 @@ class _CreateRecipeViewState extends State<CreateRecipeView> {
       _selectedImage = null;
     });
 
-    // ⬇️ Biarkan parent (HomeView) yang atur navigasi berikutnya
-    widget.onRecipePosted?.call();
+    if (widget.isEditMode) {
+      // 🔻 MODE EDIT:
+      // ganti halaman Edit dengan Detail Resep yang baru di-update
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => DetailRecipeView(
+            controller: DetailRecipeController(
+              recipeData: recipe, // kirim map hasil edit
+            ),
+          ),
+        ),
+      );
+    } else {
+      // 🔻 MODE CREATE:
+      // tetap pakai flow lama → parent (HomeView) yang direct ke Profil → Resepku
+      widget.onRecipePosted?.call();
+    }
   }
-
 
 
   @override

@@ -50,8 +50,41 @@ class InfoBox extends StatelessWidget {
     );
   }
 
+  Widget _buildImagePlaceholder() {
+    return Container(
+      height: 160,
+      width: double.infinity,
+      color: Colors.grey[50],
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            HugeIcons.strokeRoundedImage01,
+            color: Colors.grey[500],
+            size: 26,
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Belum ada gambar',
+            style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[500]),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            'Tap untuk tambah gambar',
+            style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[400]),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final String img = (selectedImage ?? '').trim();
+    final bool hasImage = img.isNotEmpty;
+    final bool isNetworkImage = img.startsWith('http');
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -73,37 +106,27 @@ class InfoBox extends StatelessWidget {
             onTap: onImageTap,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: selectedImage != null
-                  ? Image.asset(
-                      selectedImage!,
-                      height: 160,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    )
-                  : Container(
-                      height: 160,
-                      width: double.infinity,
-                      color: Colors.grey[50],
-                      alignment: Alignment.center,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            HugeIcons.strokeRoundedImage01,
-                            color: Colors.grey[500],
-                            size: 26,
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            'Tap untuk tambah gambar',
-                            style: GoogleFonts.poppins(
-                              fontSize: 13,
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+              child: hasImage
+                  ? (isNetworkImage
+                        ? Image.network(
+                            img,
+                            height: 160,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return _buildImagePlaceholder();
+                            },
+                          )
+                        : Image.asset(
+                            img,
+                            height: 160,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return _buildImagePlaceholder();
+                            },
+                          ))
+                  : _buildImagePlaceholder(),
             ),
           ),
           const SizedBox(height: 16),

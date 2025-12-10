@@ -51,6 +51,23 @@ class RecipeCard extends StatelessWidget {
       halalBadge = isHalal;
     }
 
+    Widget _buildImagePlaceholder() {
+      return Container(
+        height: 110,
+        width: double.infinity,
+        color: Colors.grey[50],
+        alignment: Alignment.center,
+        child: Text(
+          'Belum ada gambar',
+          style: GoogleFonts.poppins(
+            fontSize: 11,
+            color: Colors.grey[500],
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      );
+    }
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -93,37 +110,30 @@ class RecipeCard extends StatelessWidget {
                                 height: 110,
                                 width: double.infinity,
                                 fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return _buildImagePlaceholder();
+                                },
                               )
                             : Image.asset(
                                 image,
                                 height: 110,
                                 width: double.infinity,
                                 fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return _buildImagePlaceholder();
+                                },
                               ))
-                      : Container(
-                          height: 110,
-                          width: double.infinity,
-                          color: Colors.grey[50],
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Belum ada gambar',
-                            style: GoogleFonts.poppins(
-                              fontSize: 11,
-                              color: Colors.grey[500],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
+                      : _buildImagePlaceholder(),
                 ),
                 if (showDelete)
                   Positioned(
                     top: 8,
-                    right: showEdit ? 32 : 8,
+                    right: showEdit ? 40 : 8, // <--- Jarak diperlebar (dulu 32)
                     child: GestureDetector(
                       onTap: onDelete,
                       child: Container(
-                        height: 24,
-                        width: 24,
+                        height: 26,
+                        width: 26,
                         decoration: BoxDecoration(
                           color: Colors.red[100],
                           borderRadius: BorderRadius.circular(12),
@@ -136,15 +146,16 @@ class RecipeCard extends StatelessWidget {
                       ),
                     ),
                   ),
+
                 if (showEdit)
                   Positioned(
                     top: 8,
-                    right: 8,
+                    right: 8, // <--- Tetap 8, tapi delete digeser
                     child: GestureDetector(
                       onTap: onEdit,
                       child: Container(
-                        height: 24,
-                        width: 24,
+                        height: 26,
+                        width: 26,
                         decoration: BoxDecoration(
                           color: Colors.blue[100],
                           borderRadius: BorderRadius.circular(12),

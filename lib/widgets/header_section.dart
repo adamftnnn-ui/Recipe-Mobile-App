@@ -24,7 +24,7 @@ class HeaderSection extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'No Image',
+            'Belum ada gambar',
             style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[500]),
             textAlign: TextAlign.center,
           ),
@@ -47,7 +47,7 @@ class HeaderSection extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
             blurRadius: 12,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
