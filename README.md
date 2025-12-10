@@ -1,38 +1,71 @@
-# Recipe-App Flutter
+# 🍽️ Recipe-App Flutter
 
-## Deskripsi Singkat
-Aplikasi Recipe-App dibuat dengan **Flutter** untuk memudahkan pengguna mencari, membuat, dan berbagi resep masakan.  
-Menggunakan **data dummy** pada tahap awal agar UI/UX bisa diuji sebelum integrasi API.
+**Recipe-App** adalah aplikasi pencarian dan manajemen resep masakan berbasis **Flutter**, dengan UI modern, integrasi API real-time, serta fitur interaktif seperti **chat AI**, **trending recipes**, dan **CRUD Resepku**.
 
----
-
-## Tujuan Aplikasi
-- Menemukan resep dari berbagai kategori dan negara.  
-- Menambahkan resep secara mandiri.  
-- Berbagi ide dan inspirasi memasak antar pengguna.  
-- Antarmuka sederhana dan mudah digunakan.
+Aplikasi ini memudahkan pengguna untuk:
+- Menemukan resep dari berbagai negara.
+- Melihat detail lengkap: bahan, langkah, nutrisi, dan waktu memasak.
+- Membuat resep sendiri (create, edit, delete).
+- Menggunakan fitur percakapan AI untuk rekomendasi resep.
+- Mengecek status **Halal** otomatis pada setiap bahan.
 
 ---
 
-## Halaman Utama
-1. **Splash Screen** – Tampilan awal dengan logo aplikasi.  
-2. **Beranda** – Daftar kategori dan resep, bisa menelusuri resep tertentu.  
-3. **Detail Resep** – Informasi lengkap resep: bahan, langkah, foto, nutrisi.  
-4. **Buat Resep** – Tambah resep baru dengan nama, bahan, langkah, nutrisi.  
-5. **Obrolan** – Fitur percakapan dengan AI.  
-6. **Profil** – Data pengguna, edit akun, logout, personalisasi.
+## ✨ Fitur Utama
+
+### 🔍 Pencarian & Filter Resep
+- Cari resep secara real-time menggunakan API.
+- Filter berdasarkan kata kunci.
+- Menampilkan status **Halal**.
+
+### 🔥 Trending Recipes
+- Mengambil resep populer langsung dari API.
+- Menampilkan waktu masak, rating, dan negara asal.
+
+### 📝 Resepku (CRUD Lokal)
+- Tambah resep buatan pengguna.
+- Edit & delete resep.
+- Tampilan detail versi lokal dengan bahan, langkah, nutrisi.
+
+### 🤖 Chat AI
+- Tanya AI seperti:
+  - "Resep ayam yang enak apa?"
+  - "Bahan yang diperlukan apa saja?"
+- Mendapatkan hasil yang langsung diambil dari API.
+
+### 🧼 Pengecekan Halal Otomatis
+- Algoritma sederhana memeriksa daftar bahan.
+- Badge otomatis Hijau (Halal) / Abu (Tidak Halal).
+
+### 🧭 Navigasi Modern
+- Tab bar 4 halaman: Home – Explore – Chat – Profile.
+- Setelah:
+  - **Create resep → otomatis ke Resepku**
+  - **Edit resep → otomatis masuk ke Detail Resep versi terbaru**
 
 ---
 
-## Cara Menjalankan
-1. git clone https://github.com/adamftnnn-ui/Recipe-App.git
-2. cd Recipe-App
-3. flutter pub get
-4. flutter run
+## 🛠️ Daftar Endpoint API yang Digunakan
+
+Berikut semua endpoint lengkap yang digunakan aplikasi:
+
+| Kategori | Endpoint | Deskripsi |
+|---------|----------|-----------|
+| **Trending Recipes** | `recipes/complexSearch?sort=popularity&number=10&addRecipeInformation=true` | Mengambil resep populer dengan informasi lengkap |
+| **Random Recipes** | `recipes/random?number=6` | Mengambil 6 resep acak untuk rekomendasi |
+| **Search/Filter Recipes** | `recipes/complexSearch?query={keyword}&number=20&addRecipeInformation=true&includeNutrition=true` | Mencari resep berdasarkan kata kunci |
+| **Example Category: Middle Eastern** | `recipes/complexSearch?query=middle+eastern&number=3&addRecipeInformation=true` | Contoh pencarian kategori tertentu |
+| **Recipe Detail** | `recipes/{id}/information?includeNutrition=true` | Mendapatkan detail lengkap resep (bahan, langkah, nutrisi) |
+| **Chat AI** | `food/converse?text={message}&contextId={id}` | Chat AI dengan Spoonacular (menghasilkan jawaban + rekomendasi) |
 
 ---
 
-## Rencana Pengembangan
-- Integrasi API untuk resep real-time
-- Autentikasi & penyimpanan data pengguna (Firebase)
-- Optimalisasi performa & UI lebih interaktif
+## 📦 Cara Instalasi
+
+Ikuti langkah-langkah berikut untuk menjalankan aplikasi:
+
+```sh
+git clone https://github.com/adamftnnn-ui/Recipe-App.git
+cd Recipe-App
+flutter pub get
+flutter run
